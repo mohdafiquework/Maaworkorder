@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank Facilities Portal - Work Order Management</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  body { font-family: 'Inter', sans-serif; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+<div id="app">
+  <!-- Navigation -->
+  <nav class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+        <svg class="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold">Bank Facilities Portal</h1>
+        <p class="text-xs text-slate-400">Work Order Management System</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex bg-slate-800 rounded-lg p-1">
+        <button onclick="setRole('staff')" id="btn-staff" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all bg-amber-500 text-slate-900">Bank Staff</button>
+        <button onclick="setRole('vendor')" id="btn-vendor" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-300 hover:text-white">Vendor</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center text-sm font-bold" id="user-avatar">JS</div>
+        <span class="text-sm" id="user-name">John Smith</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto p-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" id="stats-section">
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm text-slate-500 font-medium">Total Orders</p>
+            <p class="text-3xl font-bold text-slate-900 mt-1" id="stat-total">12</p>
+          </div>
+          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm text-slate-500 font-medium">Pending</p>
+            <p class="text-3xl font-bold text-amber-600 mt-1" id="stat-pending">4</p>
+          </div>
+          <div class="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm text-slate-500 font-medium">In Progress</p>
+            <p class="text-3xl font-bold text-blue-600 mt-1" id="stat-progress">5</p>
+          </div>
+          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm text-slate-500 font-medium">Completed</p>
+            <p class="text-3xl font-bold text-emerald-600 mt-1" id="stat-completed">3</p>
+          </div>
+          <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+      <div class="flex gap-2">
+        <button onclick="filterStatus('all')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-slate-900 text-white" data-filter="all">All Orders</button>
+        <button onclick="filterStatus('pending')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="pending">Pending</button>
+        <button onclick="filterStatus('in-progress')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="in-progress">In Progress</button>
+        <button onclick="filterStatus('completed')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="completed">Completed</button>
+      </div>
+      <button onclick="openNewOrderModal()" id="new-order-btn" class="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        New Work Order
+      </button>
+    </div>
+
+    <!-- Work Orders Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4">WO #</th>
+              <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4">Title</th>
+              <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4">Location</th>
+              <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4">Priority</th>
+              <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4">Status</th>
+              <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4">Vendor</th>
+              <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4">Date</th>
+              <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table-body" class="divide-y divide-slate-100">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Order Modal -->
+  <div id="new-order-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+        <h2 class="text-xl font-bold text-slate-900">Create New Work Order</h2>
+        <button onclick="closeNewOrderModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-colors">
+          <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form onsubmit="submitNewOrder(event)" class="p-6 space-y-5">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Work Order Title</label>
+            <input type="text" id="order-title" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all" placeholder="e.g., HVAC Repair - Main Branch">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Location / Branch</label>
+            <select id="order-location" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all">
+              <option>Main Branch - Downtown</option>
+              <option>Westside Branch</option>
+              <option>Eastgate Branch</option>
+              <option>Corporate HQ</option>
+              <option>Data Center</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Category</label>
+            <select id="order-category" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all">
+              <option>HVAC / Climate Control</option>
+              <option>Electrical</option>
+              <option>Plumbing</option>
+              <option>Security Systems</option>
+              <option>IT Infrastructure</option>
+              <option>Cleaning / Janitorial</option>
+              <option>General Maintenance</option>
+              <option>Elevator / Escalator</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Priority Level</label>
+            <select id="order-priority" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all">
+              <option value="low">Low - Routine</option>
+              <option value="medium" selected>Medium - Standard</option>
+              <option value="high">High - Urgent</option>
+              <option value="critical">Critical - Emergency</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Assign Vendor</label>
+          <select id="order-vendor" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all">
+            <option value="">Select a vendor...</option>
+            <option>CoolTech HVAC Services</option>
+            <option>PowerGrid Electrical</option>
+            <option>SecureGuard Systems</option>
+            <option>FlowRight Plumbing</option>
+            <option>NetCore IT Solutions</option>
+            <option>CleanSweep Janitorial</option>
+            <option>BuildRight General</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1.5">Description & Details</label>
+          <textarea id="order-description" rows="4" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all resize-none" placeholder="Describe the issue, required work, and any special instructions..."></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeNewOrderModal()" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold transition-colors">Create Work Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div id="detail-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900" id="detail-title">Work Order Details</h2>
+          <p class="text-sm text-slate-500" id="detail-id">WO-2026-001</p>
+        </div>
+        <button onclick="closeDetailModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition-colors">
+          <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-xs text-slate-500 uppercase font-medium">Status</p>
+            <div id="detail-status" class="mt-1"></div>
+          </div>
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-xs text-slate-500 uppercase font-medium">Priority</p>
+            <p class="mt-1 font-semibold text-slate-900" id="detail-priority">Medium</p>
+          </div>
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-xs text-slate-500 uppercase font-medium">Created</p>
+            <p class="mt-1 font-semibold text-slate-900" id="detail-date">Jul 15, 2026</p>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-slate-900 mb-2">Description</h3>
+          <p class="text-slate-600 text-sm leading-relaxed bg-slate-50 rounded-lg p-4" id="detail-description"></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900 mb-2">Location</h3>
+            <div class="flex items-center gap-2 text-sm text-slate-600">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span id="detail-location"></span>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900 mb-2">Assigned Vendor</h3>
+            <div class="flex items-center gap-2 text-sm text-slate-600">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <span id="detail-vendor"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Update Actions (Vendor View) -->
+        <div id="vendor-actions" class="mb-6 hidden">
+          <h3 class="text-sm font-semibold text-slate-900 mb-3">Update Status</h3>
+          <div class="flex gap-2">
+            <button onclick="updateOrderStatus('in-progress')" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Start Work</button>
+            <button onclick="updateOrderStatus('completed')" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors">Mark Complete</button>
+            <button onclick="updateOrderStatus('pending')" class="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700 transition-colors">On Hold</button>
+          </div>
+        </div>
+
+        <!-- Communication Thread -->
+        <div class="border-t border-slate-200 pt-6">
+          <h3 class="text-sm font-semibold text-slate-900 mb-4">Communication Log</h3>
+          <div id="comments-list" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+            <!-- Comments populated by JS -->
+          </div>
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" id="comment-avatar">JS</div>
+            <div class="flex-1 flex gap-2">
+              <input type="text" id="new-comment" class="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm" placeholder="Add a comment or update...">
+              <button onclick="addComment()" class="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Sample Data
+let currentRole = 'staff';
+let currentFilter = 'all';
+let currentOrderId = null;
+
+const vendors = ['CoolTech HVAC Services', 'PowerGrid Electrical', 'SecureGuard Systems', 'FlowRight Plumbing', 'NetCore IT Solutions'];
+
+let workOrders = [
+  {
+    id: 'WO-2026-001',
+    title: 'HVAC Filter Replacement - Main Branch',
+    location: 'Main Branch - Downtown',
+    category: 'HVAC / Climate Control',
+    priority: 'medium',
+    status: 'in-progress',
+    vendor: 'CoolTech HVAC Services',
+    date: '2026-07-10',
+    description: 'Replace all air filters in the main branch HVAC system. Filters are located on floors 1-4 in the utility rooms. Please use MERV 13 rated filters as specified in the maintenance contract.',
+    comments: [
+      { user: 'John Smith', role: 'staff', text: 'Please ensure filters are replaced during off-hours to minimize disruption.', time: 'Jul 10, 10:30 AM' },
+      { user: 'Mike Torres', role: 'vendor', text: 'Scheduled for Saturday morning. Will arrive at 7 AM.', time: 'Jul 10, 2:15 PM' },
+      { user: 'John Smith', role: 'staff', text: 'Perfect, thank you Mike.', time: 'Jul 10, 3:00 PM' }
+    ]
+  },
+  {
+    id: 'WO-2026-002',
+    title: 'Security Camera Repair - Westside Branch',
+    location: 'Westside Branch',
+    category: 'Security Systems',
+    priority: 'high',
+    status: 'pending',
+    vendor: 'SecureGuard Systems',
+    date: '2026-07-14',
+    description: 'Camera #4 in the parking lot is showing a flickering image and intermittent signal loss. This is a high-priority security concern. Please inspect the camera, cabling, and power supply.',
+    comments: [
+      { user: 'Sarah Chen', role: 'staff', text: 'This camera covers the main parking entrance. Urgent fix needed.', time: 'Jul 14, 9:00 AM' }
+    ]
+  },
+  {
+    id: 'WO-2026-003',
+    title: 'Elevator Annual Inspection',
+    location: 'Corporate HQ',
+    category: 'Elevator / Escalator',
+    priority: 'low',
+    status: 'completed',
+    vendor: 'BuildRight General',
+    date: '2026-07-05',
+    description: 'Annual safety inspection and certification for all 3 elevators in the corporate headquarters building. Include load testing and brake inspection.',
+    comments: [
+      { user: 'John Smith', role: 'staff', text: 'Please coordinate with building management for access.', time: 'Jul 1, 11:00 AM' },
+      { user: 'Lisa Park', role: 'vendor', text: 'Inspection completed. All elevators passed. Certificates attached.', time: 'Jul 5, 4:30 PM' },
+      { user: 'John Smith', role: 'staff', text: 'Received and filed. Thank you!', time: 'Jul 6, 9:00 AM' }
+    ]
+  },
+  {
+    id: 'WO-2026-004',
+    title: 'Server Room Temperature Alarm',
+    location: 'Data Center',
+    category: 'HVAC / Climate Control',
+    priority: 'critical',
+    status: 'in-progress',
+    vendor: 'CoolTech HVAC Services',
+    date: '2026-07-16',
+    description: 'Temperature alarm triggered in server room B. Current reading is 78°F and rising. CRITICAL: Server equipment at risk. Need immediate response.',
+    comments: [
+      { user: 'Sarah Chen', role: 'staff', text: 'EMERGENCY - Please respond immediately. IT systems at risk.', time: 'Jul 16, 8:15 AM' },
+      { user: 'Mike Torres', role: 'vendor', text: 'Technician dispatched. ETA 30 minutes.', time: 'Jul 16, 8:20 AM' },
+      { user: 'Mike Torres', role: 'vendor', text: 'Arrived on site. Found faulty compressor. Ordering replacement part. Temporary cooling unit deployed.', time: 'Jul 16, 9:45 AM' }
+    ]
+  },
+  {
+    id: 'WO-2026-005',
+    title: 'Plumbing Leak - 2nd Floor Restroom',
+    location: 'Eastgate Branch',
+    category: 'Plumbing',
+    priority: 'high',
+    status: 'pending',
+    vendor: 'FlowRight Plumbing',
+    date: '2026-07-15',
+    description: "Water leak reported in the men's restroom on the 2nd floor. Water is pooling near the sink area. May need to shut off water supply to that floor temporarily.",
+    comments: [
+      { user: 'Sarah Chen', role: 'staff', text: 'Please prioritize this. We have customers complaining.', time: 'Jul 15, 2:00 PM' }
+    ]
+  },
+  {
+    id: 'WO-2026-006',
+    title: 'Network Cable Installation - New Offices',
+    location: 'Corporate HQ',
+    category: 'IT Infrastructure',
+    priority: 'medium',
+    status: 'completed',
+    vendor: 'NetCore IT Solutions',
+    date: '2026-07-08',
+    description: 'Install Cat6 ethernet cabling for 12 new workstations on the 5th floor expansion. Include patch panel connections and cable testing.',
+    comments: [
+      { user: 'John Smith', role: 'staff', text: 'New furniture arrives Monday. Need this done by Friday.', time: 'Jul 5, 10:00 AM' },
+      { user: 'David Kim', role: 'vendor', text: 'All cabling installed and tested. 100% pass rate on all 12 drops.', time: 'Jul 8, 5:00 PM' }
+    ]
+  },
+  {
+    id: 'WO-2026-007',
+    title: 'Exterior Lighting Replacement',
+    location: 'Main Branch - Downtown',
+    category: 'Electrical',
+    priority: 'low',
+    status: 'in-progress',
+    vendor: 'PowerGrid Electrical',
+    date: '2026-07-12',
+    description: 'Replace 8 exterior LED floodlights that are flickering or dim. Lights are mounted on the building facade above the entrance and parking areas.',
+    comments: [
+      { user: 'John Smith', role: 'staff', text: 'Please use energy-efficient LED replacements.', time: 'Jul 12, 9:00 AM' },
+      { user: 'Alex Rivera', role: 'vendor', text: 'Materials ordered. Installation scheduled for next Tuesday evening.', time: 'Jul 12, 11:30 AM' }
+    ]
+  },
+  {
+    id: 'WO-2026-008',
+    title: 'Deep Carpet Cleaning - All Branches',
+    location: 'All Locations',
+    category: 'Cleaning / Janitorial',
+    priority: 'low',
+    status: 'pending',
+    vendor: 'CleanSweep Janitorial',
+    date: '2026-07-17',
+    description: 'Quarterly deep carpet cleaning for all bank branches. Include stain treatment and deodorizing. Schedule during closed hours.',
+    comments: []
+  },
+  {
+    id: 'WO-2026-009',
+    title: 'Fire Suppression System Test',
+    location: 'Data Center',
+    category: 'Security Systems',
+    priority: 'high',
+    status: 'pending',
+    vendor: 'SecureGuard Systems',
+    date: '2026-07-18',
+    description: 'Annual fire suppression system inspection and test for the data center. Must comply with NFPA standards. Include documentation for insurance.',
+    comments: [
+      { user: 'Sarah Chen', role: 'staff', text: 'Insurance audit next month. Need documentation ready.', time: 'Jul 17, 3:00 PM' }
+    ]
+  },
+  {
+    id: 'WO-2026-010',
+    title: 'Electrical Panel Upgrade - Westside',
+    location: 'Westside Branch',
+    category: 'Electrical',
+    priority: 'medium',
+    status: 'in-progress',
+    vendor: 'PowerGrid Electrical',
+    date: '2026-07-11',
+    description: 'Upgrade main electrical panel to support new ATM installation. Panel currently at 80% capacity. New 200A panel required.',
+    comments: [
+      { user: 'John Smith', role: 'staff', text: 'ATM vendor needs power by end of month.', time: 'Jul 11, 9:00 AM' },
+      { user: 'Alex Rivera', role: 'vendor', text: 'Permits approved. Work starts Monday.', time: 'Jul 11, 2:00 PM' }
+    ]
+  },
+  {
+    id: 'WO-2026-011',
+    title: 'Window Tinting - Executive Offices',
+    location: 'Corporate HQ',
+    category: 'General Maintenance',
+    priority: 'low',
+    status: 'completed',
+    vendor: 'BuildRight General',
+    date: '2026-07-03',
+    description: 'Apply UV-protective window film to executive offices on the 8th floor. Reduce glare and improve energy efficiency.',
+    comments: [
+      { user: 'John Smith', role: 'staff', text: 'Looks great. Thank you for the clean installation.', time: 'Jul 3, 5:00 PM' }
+    ]
+  },
+  {
+    id: 'WO-2026-012',
+    title: 'Backup Generator Service',
+    location: 'Data Center',
+    category: 'Electrical',
+    priority: 'high',
+    status: 'pending',
+    vendor: 'PowerGrid Electrical',
+    date: '2026-07-19',
+    description: 'Semi-annual service of backup diesel generator. Change oil, replace filters, test load transfer switch, and run full load test for 30 minutes.',
+    comments: []
+  }
+];
+
+// Role Management
+function setRole(role) {
+  currentRole = role;
+  document.getElementById('btn-staff').className = role === 'staff' 
+    ? 'px-4 py-1.5 rounded-md text-sm font-medium transition-all bg-amber-500 text-slate-900'
+    : 'px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-300 hover:text-white';
+  document.getElementById('btn-vendor').className = role === 'vendor'
+    ? 'px-4 py-1.5 rounded-md text-sm font-medium transition-all bg-amber-500 text-slate-900'
+    : 'px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-300 hover:text-white';
+
+  document.getElementById('user-name').textContent = role === 'staff' ? 'John Smith' : 'Mike Torres';
+  document.getElementById('user-avatar').textContent = role === 'staff' ? 'JS' : 'MT';
+  document.getElementById('comment-avatar').textContent = role === 'staff' ? 'JS' : 'MT';
+
+  const newOrderBtn = document.getElementById('new-order-btn');
+  if (role === 'vendor') {
+    newOrderBtn.style.display = 'none';
+  } else {
+    newOrderBtn.style.display = 'flex';
+  }
+
+  renderOrders();
+}
+
+// Filter Management
+function filterStatus(status) {
+  currentFilter = status;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    if (btn.dataset.filter === status) {
+      btn.className = 'filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-slate-900 text-white';
+    } else {
+      btn.className = 'filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-50';
+    }
+  });
+  renderOrders();
+}
+
+// Priority Badge
+function getPriorityBadge(priority) {
+  const colors = {
+    low: 'bg-slate-100 text-slate-600',
+    medium: 'bg-blue-50 text-blue-700',
+    high: 'bg-amber-50 text-amber-700',
+    critical: 'bg-red-50 text-red-700'
+  };
+  const labels = { low: 'Low', medium: 'Medium', high: 'High', critical: 'Critical' };
+  return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[priority]}">${labels[priority]}</span>`;
+}
+
+// Status Badge
+function getStatusBadge(status) {
+  const colors = {
+    pending: 'bg-amber-50 text-amber-700 border-amber-200',
+    'in-progress': 'bg-blue-50 text-blue-700 border-blue-200',
+    completed: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  };
+  const labels = { pending: 'Pending', 'in-progress': 'In Progress', completed: 'Completed' };
+  return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${colors[status]}">${labels[status]}</span>`;
+}
+
+// Render Orders Table
+function renderOrders() {
+  const tbody = document.getElementById('orders-table-body');
+  let filtered = workOrders;
+
+  if (currentFilter !== 'all') {
+    filtered = workOrders.filter(o => o.status === currentFilter);
+  }
+
+  // For vendor view, only show orders assigned to "current vendor"
+  if (currentRole === 'vendor') {
+    filtered = filtered.filter(o => o.vendor === 'CoolTech HVAC Services' || o.vendor === 'PowerGrid Electrical');
+  }
+
+  tbody.innerHTML = filtered.map(order => `
+    <tr class="hover:bg-slate-50 transition-colors cursor-pointer" onclick="openDetailModal('${order.id}')">
+      <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-slate-900">${order.id}</td>
+      <td class="px-6 py-4">
+        <div class="text-sm font-medium text-slate-900">${order.title}</div>
+        <div class="text-xs text-slate-500">${order.category}</div>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">${order.location}</td>
+      <td class="px-6 py-4 whitespace-nowrap">${getPriorityBadge(order.priority)}</td>
+      <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(order.status)}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">${order.vendor}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${new Date(order.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <button class="text-amber-600 hover:text-amber-700 text-sm font-medium">View Details &rarr;</button>
+      </td>
+    </tr>
+  `).join('');
+
+  // Update stats
+  const total = workOrders.length;
+  const pending = workOrders.filter(o => o.status === 'pending').length;
+  const progress = workOrders.filter(o => o.status === 'in-progress').length;
+  const completed = workOrders.filter(o => o.status === 'completed').length;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-progress').textContent = progress;
+  document.getElementById('stat-completed').textContent = completed;
+}
+
+// Modal Functions
+function openNewOrderModal() {
+  document.getElementById('new-order-modal').classList.remove('hidden');
+  document.getElementById('new-order-modal').classList.add('flex');
+}
+
+function closeNewOrderModal() {
+  document.getElementById('new-order-modal').classList.add('hidden');
+  document.getElementById('new-order-modal').classList.remove('flex');
+  document.getElementById('order-title').value = '';
+  document.getElementById('order-description').value = '';
+}
+
+function submitNewOrder(e) {
+  e.preventDefault();
+  const newOrder = {
+    id: `WO-2026-${String(workOrders.length + 1).padStart(3, '0')}`,
+    title: document.getElementById('order-title').value,
+    location: document.getElementById('order-location').value,
+    category: document.getElementById('order-category').value,
+    priority: document.getElementById('order-priority').value,
+    status: 'pending',
+    vendor: document.getElementById('order-vendor').value || 'Unassigned',
+    date: new Date().toISOString().split('T')[0],
+    description: document.getElementById('order-description').value,
+    comments: []
+  };
+  workOrders.unshift(newOrder);
+  closeNewOrderModal();
+  renderOrders();
+}
+
+function openDetailModal(orderId) {
+  currentOrderId = orderId;
+  const order = workOrders.find(o => o.id === orderId);
+  if (!order) return;
+
+  document.getElementById('detail-title').textContent = order.title;
+  document.getElementById('detail-id').textContent = order.id;
+  document.getElementById('detail-status').innerHTML = getStatusBadge(order.status);
+  document.getElementById('detail-priority').textContent = order.priority.charAt(0).toUpperCase() + order.priority.slice(1);
+  document.getElementById('detail-date').textContent = new Date(order.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  document.getElementById('detail-description').textContent = order.description;
+  document.getElementById('detail-location').textContent = order.location;
+  document.getElementById('detail-vendor').textContent = order.vendor;
+
+  // Show/hide vendor actions
+  const vendorActions = document.getElementById('vendor-actions');
+  if (currentRole === 'vendor' && order.status !== 'completed') {
+    vendorActions.classList.remove('hidden');
+  } else {
+    vendorActions.classList.add('hidden');
+  }
+
+  // Render comments
+  renderComments(order);
+
+  document.getElementById('detail-modal').classList.remove('hidden');
+  document.getElementById('detail-modal').classList.add('flex');
+}
+
+function closeDetailModal() {
+  document.getElementById('detail-modal').classList.add('hidden');
+  document.getElementById('detail-modal').classList.remove('flex');
+  currentOrderId = null;
+}
+
+function renderComments(order) {
+  const list = document.getElementById('comments-list');
+  if (order.comments.length === 0) {
+    list.innerHTML = '<p class="text-sm text-slate-400 italic text-center py-4">No comments yet</p>';
+    return;
+  }
+  list.innerHTML = order.comments.map(c => `
+    <div class="flex gap-3">
+      <div class="w-8 h-8 ${c.role === 'staff' ? 'bg-slate-700' : 'bg-amber-500'} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+        ${c.user.split(' ').map(n => n[0]).join('')}
+      </div>
+      <div class="flex-1">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-semibold text-slate-900">${c.user}</span>
+          <span class="text-xs px-2 py-0.5 rounded-full ${c.role === 'staff' ? 'bg-slate-100 text-slate-600' : 'bg-amber-100 text-amber-700'}">${c.role === 'staff' ? 'Bank Staff' : 'Vendor'}</span>
+          <span class="text-xs text-slate-400">${c.time}</span>
+        </div>
+        <p class="text-sm text-slate-600 mt-1">${c.text}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addComment() {
+  const input = document.getElementById('new-comment');
+  const text = input.value.trim();
+  if (!text || !currentOrderId) return;
+
+  const order = workOrders.find(o => o.id === currentOrderId);
+  const userName = currentRole === 'staff' ? 'John Smith' : 'Mike Torres';
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+  order.comments.push({
+    user: userName,
+    role: currentRole,
+    text: text,
+    time: timeStr
+  });
+
+  input.value = '';
+  renderComments(order);
+}
+
+function updateOrderStatus(newStatus) {
+  if (!currentOrderId) return;
+  const order = workOrders.find(o => o.id === currentOrderId);
+  if (order) {
+    order.status = newStatus;
+    const userName = currentRole === 'vendor' ? 'Mike Torres' : 'John Smith';
+    const now = new Date();
+    const timeStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const statusLabels = { pending: 'On Hold', 'in-progress': 'In Progress', completed: 'Completed' };
+
+    order.comments.push({
+      user: userName,
+      role: currentRole,
+      text: `Status updated to: ${statusLabels[newStatus]}`,
+      time: timeStr
+    });
+
+    renderComments(order);
+    document.getElementById('detail-status').innerHTML = getStatusBadge(newStatus);
+    renderOrders();
+
+    if (newStatus === 'completed') {
+      document.getElementById('vendor-actions').classList.add('hidden');
+    }
+  }
+}
+
+// Enter key for comments
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('new-comment').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addComment();
+  });
+});
+
+// Initialize
+renderOrders();
+</script>
+</body>
+</html>
